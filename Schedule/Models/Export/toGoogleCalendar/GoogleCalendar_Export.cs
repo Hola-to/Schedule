@@ -2,7 +2,7 @@
 
 namespace Schedule.Models.Export.toGoogleCalendar
 {
-    public class GoogleCalendar_Export : Export_Data, SExport
+    public class GoogleCalendar_Export : Export_Data, IExport
     {
         public void Execute(string calendarId)
         {

@@ -1,4 +1,6 @@
-﻿namespace Schedule.Models.Import
+﻿using Newtonsoft.Json;
+
+namespace Schedule.Models.Import
 {
     public interface IImport
     {
@@ -16,6 +18,27 @@
         {
             OnImport?.Invoke(importable);
             importable.Execute(filePath, mode, param);
+        }
+
+        public HashSet<string> GetFiles(string filepath)
+        {
+            try
+            {
+                // Читаем содержимое файла
+                var jsonContent = File.ReadAllText(filepath);
+
+                // Десериализуем JSON-данные в список строк
+                var filesList = JsonConvert.DeserializeObject<List<string>>(jsonContent);
+
+                // Преобразуем список в HashSet и возвращаем
+                return new HashSet<string>(filesList);
+            }
+            catch (Exception ex)
+            {
+                // Обработка ошибок (например, файл не найден, ошибки формата JSON и т.д.)
+                Console.WriteLine($"Error reading file: {ex.Message}");
+                return new HashSet<string>(); // Возвращаем пустой HashSet в случае ошибки
+            }
         }
     }
 }

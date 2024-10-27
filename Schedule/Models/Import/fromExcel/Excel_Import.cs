@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace Schedule.Models.Import.fromExcel
 {
-    public class Import_data : IImport
+    public class Import_all_data : IImport
     {
         public FileInfo? Some_File { get; set; }
         public void Execute(string filePath, int mode, string param)

@@ -35,8 +35,7 @@ namespace Schedule.Models.Import
             }
             catch (Exception ex)
             {
-                // Обработка ошибок (например, файл не найден, ошибки формата JSON и т.д.)
-                Console.WriteLine($"Error reading file: {ex.Message}");
+                // Обработка ошибок (например, файл не найден, ошибки формата JSON и т.д)
                 return new HashSet<string>(); // Возвращаем пустой HashSet в случае ошибки
             }
         }

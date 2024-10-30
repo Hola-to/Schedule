@@ -13,7 +13,7 @@ namespace Schedule.Controllers
             _logger = logger;
         }
 
-        public IActionResult HomePage()
+        public IActionResult Index()
         {
             return View();
         }

@@ -10,25 +10,14 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Schedule</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
+         <div class="nav">
+                <div class="logo"><img class="logo_img" src="~/Images/LogoProject1.jpg" alt="Logo Image"></div>
+                <ul class="nav_list">
+                    <li class="nav_list_item"><a class="nav_list_item_link" asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
+                    <li class="nav_list_item"><a class="nav_list_item_link" asp-area="" asp-controller="Home" asp-action="Authors">Authors</a></li>
+                    <li class="nav_list_item"><a class="nav_list_item_link" asp-area="" asp-controller="Home" asp-action="temp">My table</a></li>
+                </ul>
+         </div>
     </header>
     <div class="container">
         <main role="main" class="pb-3">
@@ -36,9 +25,16 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2024 - Schedule - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    <footer>
+        <div class="footer_content">
+            <div class="footer_links">
+                <a href="https://web.telegram.org/a/#1055217763" target="_blank">Telegram</a>
+                <a href="tel:+1234567890">+375336303655</a>
+            </div>
+            <div class="footer_images">
+                <img src="~/Images/footer_image1.jpg" alt="Footer Image 1">
+                <img src="~/Images/footer_image2.jpg" alt="Footer Image 2">
+            </div>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

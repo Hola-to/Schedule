@@ -18,6 +18,10 @@ namespace Schedule.Controllers
             return View();
         }
 
+        public IActionResult Authors()
+        {
+            return View();
+        }
         public IActionResult Privacy()
         {
             return View();

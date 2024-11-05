@@ -1,0 +1,180 @@
+/*For whole page*/
+*{
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+}
+
+/*For header part*/
+.header{
+    height: 400px;
+}
+
+/*For navigation part*/
+.nav{
+    display: flex;
+    justify-content: space-around;
+    background-color: #181C14;
+    height: 5rem;
+    align-items: center;
+}
+
+.nav_list{
+    width: 20%;
+    display: flex;
+    justify-content: space-between;
+}
+
+.nav_list_item_link{
+    text-decoration: none;
+    color: white;
+    font-size: 20px;
+}
+
+.logo{
+    display: flex;
+    justify-content: center;
+}
+
+/*For Section About*/
+.about{
+    background-color: #3C3D37;
+    padding: 50px 0;
+    text-align: center;
+}
+
+.about_content{
+    width: 80%;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-around;
+}
+
+.author{
+    width: 45%;
+}
+
+.author_photo{
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    margin-bottom: 20px;
+}
+
+.author_title{
+    font-size: 40px;
+    color: white;
+    margin-bottom: 20px;
+    font-family: 'Lato', sans-serif;
+}
+
+.author_description{
+    font-size: 18px;
+    color: white;
+    font-family: 'Open Sans', sans-serif;
+}
+
+/*For Section Skills*/
+.skills{
+    background-color: #ECDFCC;
+    padding: 50px 0;
+    text-align: center;
+}
+
+.skills_content{
+    width: 80%;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-around;
+}
+
+.author_skills{
+    width: 45%;
+}
+
+.skills_title{
+    font-size: 40px;
+    margin-bottom: 20px;
+    font-family: 'Lato', sans-serif;
+}
+
+.skills_list{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.skill{
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 80%;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.skill h3{
+    font-size: 24px;
+    margin-bottom: 10px;
+    font-family: 'Roboto', sans-serif;
+}
+
+.skill p{
+    font-size: 18px;
+    font-family: 'Open Sans', sans-serif;
+}
+
+/*For Section Contact*/
+.contact{
+    background-color: #3C3D37;
+    padding: 50px 0;
+    text-align: center;
+}
+
+.contact_title{
+    font-size: 40px;
+    color: white;
+    margin-bottom: 20px;
+    font-family: 'Lato', sans-serif;
+}
+
+.contact_info{
+    font-size: 18px;
+    color: white;
+    font-family: 'Open Sans', sans-serif;
+}
+
+.contact_info a{
+    color: white;
+    text-decoration: none;
+}
+
+/*For Footer*/
+footer{
+    background-color: #ECDFCC;
+    color: black;
+    padding: 20px 0;
+    text-align: center;
+    font-family: 'Open Sans', sans-serif;
+}
+
+.footer_content{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.footer_links a{
+    color: black;
+    text-decoration: none;
+    margin: 0 10px;
+    font-size: 18px;
+}
+
+.footer_images img{
+    width: 100px;
+    height: 100px;
+    margin: 0 10px;
+}

@@ -1,5 +1,7 @@
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddScoped<Schedule.Models.Import.Importer>();
+builder.Services.AddScoped<Schedule.Models.Export.Exporter>();
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
@@ -19,6 +21,7 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
+ 
 
 app.MapControllerRoute(
     name: "default",

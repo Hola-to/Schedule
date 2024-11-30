@@ -14,6 +14,7 @@
         public void ExportObject(IExport exportable)
         {
             OnExport?.Invoke(exportable);
+            exportable.Execute("Расписание ВГУ");
         }
     }
 }

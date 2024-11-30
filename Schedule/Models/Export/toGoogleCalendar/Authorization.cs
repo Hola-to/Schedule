@@ -12,10 +12,10 @@ namespace Schedule.Models.Export.toGoogleCalendar
             UserCredential credential;
 
             using (var stream =
-                new FileStream("..\\..\\..\\..\\Data\\credentials.json", FileMode.Open, FileAccess.Read))
+                new FileStream("Models\\Export\\toGoogleCalendar\\credentials.json", FileMode.Open, FileAccess.Read))
             {
                 // Временное хранилище для токенов доступа
-                string credPath = "..\\..\\..\\..\\Data\\Tokens";
+                string credPath = "Models\\Export\\toGoogleCalendar\\Tokens";
                 credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
                     GoogleClientSecrets.FromStream(stream).Secrets,
                     Scopes,

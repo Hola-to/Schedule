@@ -1,0 +1,21 @@
+﻿@using Schedule.Models.Database
+
+@model List<Linker_List>
+
+@{
+    ViewData["Title"] = "Расписание";
+}
+
+<h2>Расписание</h2>
+
+<!-- Всплывающее окно -->
+<div id="popup" style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); border: 1px solid black; background-color: white; padding: 20px; z-index: 1000;">
+    <p>Желаете ли вы экспортировать данные в календарь?</p>
+    <button id="yesBtn">Да</button>
+    <button id="noBtn">Нет</button>
+</div>
+
+<!-- Фон длящегося всплывающего окна -->
+<div id="overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color:rgba(0,0,0,0.7); z-index: 500;"></div>
+
+<script src="@Url.Content("~/js/export.js")"></script>

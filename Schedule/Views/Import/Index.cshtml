@@ -1,0 +1,91 @@
+﻿<form method="post">
+    <label for="actionSelect">Выберите действие:</label>
+    <select id="actionSelect" name="selectedAction" onchange="handleSelection(this)">
+        <option value="">-- Выберите --</option>
+        <option value="Excel">Excel</option>
+        <option value="Cloud">Облако</option>
+    </select>
+</form>
+
+@if (ViewData["selectedAction"] != null)
+{
+    <p>Вы выбрали действие: @ViewData["selectedAction"]</p>
+}
+
+<!-- Первое модальное окно для выбора файлов -->
+<div class="modal fade" id="fileSelectionModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Выбор файлов для импорта</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="file" multiple id="fileInput">
+                <p>Выберите файлы для обработки (.xls, .xlsx)</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                <button type="button" class="btn btn-primary" onclick="submitFiles()">Подтвердить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно для выбора режима -->
+<div class="modal fade" id="modeSelectionModal" tabindex="-1" role="dialog" aria-labelledby="modeModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modeModalLabel">Выберите режим</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="mode" id="radioStudent" value="Student">
+                    <label class="form-check-label" for="radioStudent">Студент</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="mode" id="radioTeacher" value="Teacher">
+                    <label class="form-check-label" for="radioTeacher">Преподаватель</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                <button type="button" class="btn btn-primary" onclick="submitMode()">Подтвердить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно для ввода названия группы и имени преподавателя -->
+<div class="modal fade" id="inputNamesModal" tabindex="-1" role="dialog" aria-labelledby="namesModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="namesModalLabel">Введите информацию</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="nameInputSection">
+                    <div class="mb-3">
+                        <label for="groupInput" class="form-label">Название группы</label>
+                        <input type="text" id="groupInput" class="form-control" placeholder="Введите название группы">
+                    </div>
+                </div>
+                <div id="teacherInputSection" style="display:none;">
+                    <div class="mb-3">
+                        <label for="teacherInput" class="form-label">Имя преподавателя</label>
+                        <input type="text" id="teacherInput" class="form-control" placeholder="Введите имя преподавателя">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                <button type="button" class="btn btn-primary" onclick="submitNames()">Подтвердить</button>
+            </div>
+        </div>
+    </div>
+</div>

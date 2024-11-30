@@ -2,16 +2,7 @@
     ViewData["Title"] = "Illiada Project";
 }
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../../Style.css">
-    <title>Illiada Project</title>
-</head>
 <body>
-    <header>
-        
-    </header>
     <main>
         <section class="intro">
             <div class="intro_content">
@@ -23,16 +14,28 @@
             <h1 class="intro_text_title">YOUR LIFE IS YOUR TIME</h1>
             <div class="collage">
                 <div class="collage1">
-                    <img class="clock" src="~/Images/clock.webp" alt="Clock">
-                    <p>Save your time</p>
+                    <form asp-controller="Import" asp-action="Index" method="post">
+                        <button type="submit" style="border: none; background: transparent; cursor: pointer;">
+                            <img class="clock" src="~/Images/clock.webp" alt="Clock">
+                            <p>Save your time</p>
+                        </button>
+                    </form>
                 </div>
                 <div class="collage2">
-                    <img class="calender" src="~/Images/calender.jpg" alt="Calendar">
-                    <p>Сalendar marks</p>
+                    <form asp-controller="Import" asp-action="Index" method="post">
+                        <button type="submit" style="border: none; background: transparent; cursor: pointer;">
+                            <img class="calender" src="~/Images/calender.jpg" alt="Calendar">
+                            <p>Сalendar marks</p>
+                        </button>
+                    </form>
                 </div>
                 <div class="collage3">
-                    <img class="bell" src="~/Images/bell.jpg" alt="Bell">
-                    <p>Remember everything</p>
+                    <form asp-controller="Import" asp-action="Index" method="post">
+                        <button type="submit" style="border: none; background: transparent; cursor: pointer;">
+                            <img class="bell" src="~/Images/bell.jpg" alt="Bell">
+                            <p>Remember everything</p>
+                        </button>
+                    </form>
                 </div>
             </div>
         </section>

@@ -24,20 +24,21 @@ namespace Schedule.Models.Import
         {
             try
             {
-                // Читаем содержимое файла
                 var jsonContent = File.ReadAllText(filepath);
-
-                // Десериализуем JSON-данные в список строк
-                var filesList = JsonConvert.DeserializeObject<List<string>>(jsonContent);
-
-                // Преобразуем список в HashSet и возвращаем
+                var jsonObject = JsonConvert.DeserializeObject<ImportedFiles>(jsonContent);
+                var filesList = jsonObject?.Files ?? new List<string>();
                 return new HashSet<string>(filesList);
             }
             catch (Exception ex)
             {
-                // Обработка ошибок (например, файл не найден, ошибки формата JSON и т.д)
+                // Логируем ошибку
                 return new HashSet<string>(); // Возвращаем пустой HashSet в случае ошибки
             }
         }
+    }
+
+    public class ImportedFiles
+    {
+        public List<string> Files { get; set; }
     }
 }

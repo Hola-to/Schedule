@@ -23,39 +23,58 @@ namespace Schedule.Controllers
         [HttpPost("Upload")]
         public async Task<IActionResult> UploadFiles(List<IFormFile> files)
         {
+            var uploadDirectory = Path.Combine(Directory.GetCurrentDirectory(), "UploadedFiles");
+            Directory.CreateDirectory(uploadDirectory);
+
             var fileNames = new List<string>();
+            var fullPaths = new List<string>();
 
             try
             {
-                if (files == null) return StatusCode(500, "Ошибка при загрузке файлов");
+                if (files == null || !files.Any())
+                {
+                    return BadRequest("Нет файлов для загрузки.");
+                }
 
                 foreach (var file in files)
                 {
                     if (file.Length > 0)
                     {
-                        // Проверка на формат файла
                         if (!file.FileName.EndsWith(".xls") && !file.FileName.EndsWith(".xlsx"))
                         {
                             return BadRequest("Неверный формат файла.");
                         }
 
-                        fileNames.Add(file.FileName);
-                        // Логика сохранения файла, если требуется
+                        var filePath = Path.Combine(uploadDirectory, file.FileName);
+
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await file.CopyToAsync(stream);
+                        }
+
+                        // Сохранение полного пути для внутреннего использования
+                        fullPaths.Add(filePath);
+                        // Добавление относительного пути для доступа через веб
+                        string relativePath = Path.Combine("UploadedFiles", file.FileName);
+                        fileNames.Add(relativePath);
                     }
                 }
 
-                // Логика сохранения имен файлов в JSON
-                var jsonPath = Path.Combine("", importedFilesPath);
-                var jsonData = new { files = fileNames };
-                var jsonString = System.Text.Json.JsonSerializer.Serialize(jsonData);
+                var jsonPath = Path.Combine("", "importedFiles.json");
+                var jsonData = new
+                {
+                    files = fileNames,          // относительные пути для доступа через веб
+                    fullPaths = fullPaths       // полные пути для внутреннего использования
+                };
 
+                // Сериализация с учетом полных путей
+                var jsonString = System.Text.Json.JsonSerializer.Serialize(jsonData, new JsonSerializerOptions { WriteIndented = true });
                 await System.IO.File.WriteAllTextAsync(jsonPath, jsonString);
 
                 return Ok();
             }
             catch (Exception ex)
             {
-                // Логируем ошибку и возвращаем сообщение об ошибке
                 return StatusCode(500, "Ошибка при загрузке файла: " + ex.Message);
             }
         }
@@ -75,31 +94,33 @@ namespace Schedule.Controllers
         [HttpPost("Excel")]
         public async Task<IActionResult> Excel([FromBody] ExcelRequest request)
         {
-            // Проверяем, переданы ли необходимые параметры
-            if (request == null || string.IsNullOrEmpty(request.Param))
+            if (request == null || string.IsNullOrEmpty(request.Param) || request.Mode < 0)
             {
-                return BadRequest("Недостающие параметры."); // Возврат ошибки 400 с сообщением
+                return BadRequest("Недостающие или неправильные параметры.");
             }
 
             var type = new Import_all_data();
 
-            // Логика импорта
             try
             {
                 var Files = _importer.GetFiles(importedFilesPath);
 
-                // Выполнение процесса импорта
+                if (!Files.Any())
+                {
+                    return BadRequest("Нет файлов для импорта.");
+                }
+
                 foreach (var FilePath in Files)
                 {
                     _importer.ImportObject(type, FilePath, request.Mode, request.Param);
                 }
 
-                return Ok(); 
+                return Ok();
             }
             catch (Exception ex)
             {
-                // Логируем ошибку и возвращаем сообщение об ошибке
-                return StatusCode(600, "Ошибка при выполнении импорта: " + ex.Message);
+                // Логирование ошибки
+                return StatusCode(500, "Ошибка при выполнении импорта: " + ex.Message);
             }
         }
 

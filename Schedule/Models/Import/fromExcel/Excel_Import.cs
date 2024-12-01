@@ -20,11 +20,11 @@ namespace Schedule.Models.Import.fromExcel
 
             using (var package = new ExcelPackage(Some_File))
             {
-                string SettingsPath = "Excel_Settings.json";
+                string SettingsPath = "Models\\Import\\fromExcel\\Excel_Settings.json";
 
                 try
                 {
-                    string json = File.ReadAllText(filePath);
+                    string json = File.ReadAllText(SettingsPath);
 
                     Dictionary<string, object>? data = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
 

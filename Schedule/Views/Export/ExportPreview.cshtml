@@ -1,21 +1,132 @@
 ﻿@using Schedule.Models.Database
-
-@model List<Linker_List>
+@model List<Linker>
 
 @{
     ViewData["Title"] = "Расписание";
 }
 
-<h2>Расписание</h2>
+<h2>@ViewData["Title"]</h2>
+
+<!-- Таблица расписания -->
+<table border="1" style="width: 100%; border-collapse: collapse; table-layout: fixed; text-align: left;">
+    <thead>
+        <tr>
+            <th style="width: 10%;">Дата</th>
+            <th style="width: 5%;">№</th>
+            <th style="width: 15%;">Время</th>
+            <th style="width: 20%;">Дисциплина</th>
+            <th style="width: 15%;">Аудитория</th>
+            <th style="width: 20%;">Преподаватель</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var linker in Model)
+        {
+            // Форматируем дату
+            var date = linker.Date?.Day + " " +
+            Enum.GetName(typeof(Schedule.Models.Database.DayOfWeek.Month_List), linker.Date?.Month_index) + " " +
+            linker.Date?.Year;
+
+            var dayOfWeek = linker.Date?.Day_Of_Week ?? "Не указано";
+
+            bool datePrinted = false; // Флаг для печати даты только один раз
+            int localRowCounter = 0; // Локальный счетчик строк для конкретной даты
+
+            // Счётчик пар
+            int pairNumber = 1;
+
+            foreach (var pairData in linker)
+            {
+                var pair = pairData.One_Pair;
+
+                // Пропускаем строки, где нет данных кроме времени (если дисциплина, аудитория и преподаватель пусты)
+                bool hasValidData = pairData.ManyData.Any(data =>
+                !string.IsNullOrWhiteSpace(data.Discipline) ||
+                !string.IsNullOrWhiteSpace(data.Auditorium) ||
+                !string.IsNullOrWhiteSpace(data.Teacher_FIO));
+
+                if (!hasValidData)
+                {
+                    localRowCounter++;
+                    pairNumber++; // Увеличиваем номер пары только если нет валидных данных
+                    continue;
+                }
+
+                // Обрабатываем каждую строку с данными
+                foreach (var data in pairData.ManyData)
+                {
+                    // Пропускаем строки, где все поля пусты (Дисциплина, Аудитория, Преподаватель)
+                    if (string.IsNullOrWhiteSpace(data.Discipline) &&
+                    string.IsNullOrWhiteSpace(data.Auditorium) &&
+                    string.IsNullOrWhiteSpace(data.Teacher_FIO))
+                    {
+                        pairNumber++; // Увеличиваем номер пары для пустой строки
+                        continue;
+                    }
+
+                    <tr>
+                        @if (datePrinted)
+                        {
+                            <td></td>
+                        }
+                        @if (!datePrinted)
+                        {
+                            datePrinted = true;
+                            <td>@date, @dayOfWeek</td>
+                        }
+                        <td>@pairNumber</td> <!-- Номер пары -->
+                        <td>@pair.start_hour.ToString("D2"):@pair.start_minute.ToString("D2") - @pair.end_hour.ToString("D2"):@pair.end_minute.ToString("D2")</td>
+                        <td>@data.Discipline</td>
+                        <td>@data.Auditorium</td>
+                        <td>@data.Teacher_FIO</td>
+                    </tr>
+
+                    pairNumber++; // Увеличиваем номер пары после каждой валидной строки
+                }
+
+                localRowCounter++;
+            }
+
+            // Если ни одной строки с данными не напечатано, добавляем пустую строку для этой даты
+            if (localRowCounter == 0)
+            {
+                <tr>
+                    <td colspan="6" style="text-align: center;">Нет данных</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+<!-- Добавляем немного стилей для таблицы -->
+<style>
+    table {
+        word-wrap: break-word;
+        white-space: normal;
+    }
+
+    th, td {
+        padding: 10px;
+        border: 1px solid #ddd;
+        text-align: left;
+    }
+</style>
+
+
+<!-- Кнопка для экспорта -->
+<button id="exportBtn" style="margin-top: 20px; padding: 10px 20px; background-color: #4285f4; color: white; border: none; border-radius: 5px; cursor: pointer;">
+    Экспортировать в Google Calendar
+</button>
 
 <!-- Всплывающее окно -->
 <div id="popup" style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); border: 1px solid black; background-color: white; padding: 20px; z-index: 1000;">
     <p>Желаете ли вы экспортировать данные в календарь?</p>
-    <button id="yesBtn">Да</button>
-    <button id="noBtn">Нет</button>
+    <button id="yesBtn" style="margin-right: 10px; padding: 5px 10px; background-color: green; color: white;">Да</button>
+    <button id="noBtn" style="padding: 5px 10px; background-color: red; color: white;">Нет</button>
 </div>
 
-<!-- Фон длящегося всплывающего окна -->
+<!-- Фон для всплывающего окна -->
 <div id="overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color:rgba(0,0,0,0.7); z-index: 500;"></div>
+
 
 <script src="@Url.Content("~/js/export.js")"></script>

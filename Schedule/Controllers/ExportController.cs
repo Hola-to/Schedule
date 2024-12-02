@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Schedule.Models.Database;
 using Schedule.Models.Export;
 using Schedule.Models.Export.toGoogleCalendar;
 
@@ -19,7 +20,14 @@ namespace Schedule.Controllers
         [HttpGet("ExportPreview")]
         public IActionResult ExportPreview()
         {
-            return View();
+            List<Linker> model = Linker_List.linkers;
+
+            if (model == null || model.Count == 0)
+            {
+                model = new List<Linker>(); // Создайте пустую коллекцию, чтобы избежать null
+            }
+
+            return View(model);
         }
 
         [HttpGet("Index")]

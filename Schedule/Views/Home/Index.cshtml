@@ -1,43 +1,32 @@
 ﻿@{
-    ViewData["Title"] = "Illiada Project";
+    ViewData["Title"] = "Загрузка расписания";
 }
 
 <body>
-    <main>
-        <section class="intro">
-            <div class="intro_content">
-                <h1 class="intro_title">Welcome to Illiada Project</h1>
-                <p class="intro_description">Your time is your life. Manage it wisely.</p>
-            </div>
-        </section>
-        <section class="intro_text">
-            <h1 class="intro_text_title">YOUR LIFE IS YOUR TIME</h1>
-            <div class="collage">
-                <div class="collage1">
-                    <form asp-controller="Import" asp-action="Index" method="post">
-                        <button type="submit" style="border: none; background: transparent; cursor: pointer;">
-                            <img class="clock" src="~/Images/clock.webp" alt="Clock">
-                            <p>Save your time</p>
-                        </button>
-                    </form>
-                </div>
-                <div class="collage2">
-                    <form asp-controller="Import" asp-action="Index" method="post">
-                        <button type="submit" style="border: none; background: transparent; cursor: pointer;">
-                            <img class="calender" src="~/Images/calender.jpg" alt="Calendar">
-                            <p>Сalendar marks</p>
-                        </button>
-                    </form>
-                </div>
-                <div class="collage3">
-                    <form asp-controller="Import" asp-action="Index" method="post">
-                        <button type="submit" style="border: none; background: transparent; cursor: pointer;">
-                            <img class="bell" src="~/Images/bell.jpg" alt="Bell">
-                            <p>Remember everything</p>
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </section>
-    </main>
+    <!-- Диалог -->
+    <div class="dialogue">
+        <div class="message left">
+            <p>Как часто ты тратишь время на поиск расписания?</p>
+        </div>
+        <div class="message right">
+            <p>Очень часто! Иногда приходится искать его по несколько раз в день.</p>
+        </div>
+        <div class="message left">
+            <p>Знаешь, есть решение! Наш сайт позволяет быстро загрузить и сохранить расписание.</p>
+        </div>
+        <div class="message right">
+            <p>Действительно? Это звучит здорово! Как это работает?</p>
+        </div>
+        <div class="message left">
+            <p>Просто загрузи свой файл с расписанием, и мы сделаем все остальное. Ты сможешь легко просматривать его в любое время.</p>
+        </div>
+        <div class="message right">
+            <p>Отлично! Я обязательно попробую!</p>
+        </div>
+    </div>
+
+    <!-- Кнопка "Попробовать" -->
+    <a asp-controller="Home" asp-action="Tables" class="try-button">Попробовать</a>
+
+    <script src="~/js/site.js"></script>
 </body>

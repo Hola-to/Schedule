@@ -1,18 +1,12 @@
-﻿<form method="post">
-    <label for="actionSelect">Выберите действие:</label>
-    <select id="actionSelect" name="selectedAction" onchange="handleSelection(this)">
-        <option value="">-- Выберите --</option>
-        <option value="Excel">Excel</option>
-        <option value="Cloud">Облако</option>
-    </select>
-</form>
+﻿<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Montserrat:wght@400;700&family=Open+Sans:wght@400;700&family=Lato:wght@400;700&display=swap">
+    <link rel="stylesheet" href="~/css/tables.css">
+    <script src="~/js/site.js"></script>
+</head>
 
-@if (ViewData["selectedAction"] != null)
-{
-    <p>Вы выбрали действие: @ViewData["selectedAction"]</p>
-}
-
-<!-- Первое модальное окно для выбора файлов -->
+<!-- Модальное окно для выбора файлов -->
 <div class="modal fade" id="fileSelectionModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">

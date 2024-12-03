@@ -1,4 +1,4 @@
-/* Фон страницы */
+п»ї/* Р¤РѕРЅ СЃС‚СЂР°РЅРёС†С‹ */
 html, body {
     height: 100%;
     margin: 0;
@@ -8,7 +8,7 @@ html, body {
 .container-fluid {
     height: 100%;
     margin: auto;
-    background: linear-gradient(315deg, #FAF7F0 3%, #D8D2C2 38%, #B17457 68%, #4A4947 98%);
+    background: linear-gradient(315deg, #65005e 3%, #3c84ce 38%, #30eee2 68%, #ff1919 98%);
     background-size: 400% 400%;
     background-attachment: fixed;
     animation: gradient 15s ease infinite;
@@ -76,7 +76,7 @@ html, body {
     }
 }
 
-/* Нав бар */
+/* РќР°РІ Р±Р°СЂ */
 .nav_bar {
     position: fixed;
     top: 0;
@@ -109,18 +109,22 @@ html, body {
     }
 
     .nav_bar_list_item:hover {
-        color: #B17457;
+        color: #ff1919;
     }
 
-/* Контент страницы */
+/* РљРѕРЅС‚РµРЅС‚ СЃС‚СЂР°РЅРёС†С‹ */
 .content {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     width: 80%;
-    max-width: 800px;
+    max-width: 600px;
     text-align: center;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 h1 {
@@ -129,86 +133,102 @@ h1 {
     margin-bottom: 40px;
 }
 
-.authors {
-    display: flex;
-    justify-content: space-between;
+.upload-box {
     margin-bottom: 40px;
 }
 
-.author {
-    width: 45%;
-    background: rgba(255, 255, 255, 0.8);
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    text-align: center;
+.custom-file-upload {
+    background: #ff1919;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease;
 }
 
-    .author img {
-        width: 150px;
-        height: 150px;
-        border-radius: 50%;
+    .custom-file-upload:hover {
+        background: #ff6666;
+    }
+
+#file-upload {
+    display: none;
+}
+
+.role-selection {
+    margin-bottom: 40px;
+}
+
+.radio-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.additional-info {
+    margin-bottom: 40px;
+}
+
+label {
+    display: block;
+    margin-bottom: 10px;
+    color: #4A4947;
+    font-size: 18px;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+#submit-button {
+    background: #ff1919;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+    #submit-button:hover {
+        background: #ff6666;
+    }
+
+/* Р‘Р»РѕРє РґР»СЏ РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ Р·Р°РіСЂСѓР¶РµРЅРЅРѕРіРѕ РґРѕРєСѓРјРµРЅС‚Р° */
+.uploaded-document {
+    margin-top: 40px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+    .uploaded-document h2 {
+        color: #4A4947;
+        font-size: 24px;
         margin-bottom: 20px;
     }
 
-    .author h2 {
-        color: #B17457;
-        font-size: 24px;
-        margin-bottom: 10px;
-    }
-
-    .author p {
-        color: #4A4947;
-        font-size: 18px;
-        margin-bottom: 10px;
-    }
-
-    .author ul {
-        list-style-type: none;
-        padding: 0;
+    .uploaded-document .document-info {
         text-align: left;
-        margin-left: 20px;
     }
 
-        .author ul li {
+        .uploaded-document .document-info p {
             color: #4A4947;
-            font-size: 16px;
-            margin-bottom: 5px;
+            font-size: 18px;
+            margin-bottom: 10px;
         }
 
-.enjoy {
-    color: #4A4947;
-    font-size: 30px;
-    margin-top: 40px;
-}
+        .uploaded-document .document-info a {
+            color: #ff1919;
+            text-decoration: none;
+            font-size: 18px;
+            transition: color 0.3s ease;
+        }
 
-/* Кнопка "Попробовать" */
-.try-button {
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    padding: 15px 30px;
-    background: linear-gradient(315deg, #ff1919 3%, #ff6666 38%, #ff9999 68%, #ffcccc 98%);
-    background-size: 400% 400%;
-    color: white;
-    font-size: 18px;
-    text-decoration: none;
-    border-radius: 50px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-    animation: gradientButton 5s ease infinite;
-}
-
-@keyframes gradientButton {
-    0% {
-        background-position: 0% 0%;
-    }
-
-    50% {
-        background-position: 100% 100%;
-    }
-
-    100% {
-        background-position: 0% 0%;
-    }
-}
+            .uploaded-document .document-info a:hover {
+                color: #ff6666;
+            }

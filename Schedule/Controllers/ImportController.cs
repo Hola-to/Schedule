@@ -79,18 +79,6 @@ namespace Schedule.Controllers
             }
         }
 
-        [HttpPost("Index")]
-        public IActionResult Index(string selectedAction)
-        {
-            if (!string.IsNullOrEmpty(selectedAction))
-            {
-                return RedirectToAction(selectedAction);
-            }
-
-            ViewData["Message"] = "Неверный выбор";
-            return View();
-        }
-
         [HttpPost("Excel")]
         public async Task<IActionResult> Excel([FromBody] ExcelRequest request)
         {

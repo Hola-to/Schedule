@@ -23,8 +23,7 @@ namespace Schedule.Controllers
         {
             return View();
         }
-
-        public IActionResult Tables()
+        public IActionResult Privacy()
         {
             return View();
         }

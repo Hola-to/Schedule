@@ -13,9 +13,12 @@ namespace Schedule.Controllers
     {
         private readonly Importer _importer;
 
-        public ImportController(Importer importer)
+        private readonly ILogger<HomeController> _logger;
+
+        public ImportController(Importer importer, ILogger<HomeController> logger)
         {
             _importer = importer;
+            _logger = logger;
         }
 
         private readonly string importedFilesPath = "importedFiles.json";
@@ -47,7 +50,14 @@ namespace Schedule.Controllers
 
                         var filePath = Path.Combine(uploadDirectory, file.FileName);
 
-                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        // Удаляем файл, если он уже существует
+                        if (System.IO.File.Exists(filePath))
+                        {
+                            System.IO.File.Delete(filePath);
+                        }
+
+                        // Создаем поток с параметром FileShare.ReadWrite
+                        using (var stream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
                         {
                             await file.CopyToAsync(stream);
                         }
@@ -60,7 +70,14 @@ namespace Schedule.Controllers
                     }
                 }
 
-                var jsonPath = Path.Combine("", "importedFiles.json");
+                var jsonPath = Path.Combine(Directory.GetCurrentDirectory(), "importedFiles.json");
+
+                // Удаляем файл, если он уже существует
+                if (System.IO.File.Exists(jsonPath))
+                {
+                    System.IO.File.Delete(jsonPath);
+                }
+
                 var jsonData = new
                 {
                     files = fileNames,          // относительные пути для доступа через веб
@@ -69,13 +86,23 @@ namespace Schedule.Controllers
 
                 // Сериализация с учетом полных путей
                 var jsonString = System.Text.Json.JsonSerializer.Serialize(jsonData, new JsonSerializerOptions { WriteIndented = true });
-                await System.IO.File.WriteAllTextAsync(jsonPath, jsonString);
+
+                // Создаем поток с параметром FileShare.None
+                using (var stream = new FileStream(jsonPath, FileMode.Create, FileAccess.Write, FileShare.None))
+                {
+                    var jsonBytes = System.Text.Encoding.UTF8.GetBytes(jsonString);
+                    await stream.WriteAsync(jsonBytes, 0, jsonBytes.Length);
+                }
 
                 return Ok();
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Ошибка при загрузке файла: " + ex.Message);
+                // Логирование ошибки
+                _logger.LogError($"Ошибка при загрузке файла: {ex.Message}");
+
+                // Возвращаем общую ошибку
+                return StatusCode(500, "Произошла ошибка при обработке запроса.");
             }
         }
 
@@ -117,6 +144,27 @@ namespace Schedule.Controllers
         {
             public int Mode { get; set; } 
             public string Param { get; set; } 
+        }
+
+        [HttpPost("DeleteUploadedFiles")]
+        public IActionResult DeleteUploadedFiles()
+        {
+            try
+            {
+                string uploadDirectory = Path.Combine(Directory.GetCurrentDirectory(), "UploadedFiles");
+
+                if (Directory.Exists(uploadDirectory))
+                {
+                    Directory.Delete(uploadDirectory, recursive: true);
+                }
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Ошибка при удалении папки UploadedFiles: {ex.Message}");
+                return StatusCode(500, "Произошла ошибка при удалении папки UploadedFiles.");
+            }
         }
     }
 }

@@ -125,6 +125,7 @@ html, body {
     padding: 40px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 2; /* Убедитесь, что контент не перекрывает кнопку */
 }
 
 h1 {
@@ -156,6 +157,8 @@ h1 {
 
 .role-selection {
     margin-bottom: 40px;
+    position: relative; /* Убедитесь, что блоки не перекрывают кнопку */
+    z-index: 1; /* Убедитесь, что блоки не перекрывают кнопку */
 }
 
 .radio-buttons {
@@ -166,6 +169,8 @@ h1 {
 
 .additional-info {
     margin-bottom: 40px;
+    position: relative; /* Убедитесь, что блоки не перекрывают кнопку */
+    z-index: 1; /* Убедитесь, что блоки не перекрывают кнопку */
 }
 
 label {
@@ -184,17 +189,22 @@ input[type="text"] {
 }
 
 #submit-button {
-    background: #ff1919;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background 0.3s ease;
+    background: #ff1919; /* Цвет фона */
+    color: white; /* Цвет текста */
+    padding: 10px 20px; /* Внутренние отступы */
+    border: none; /* Убираем границу */
+    border-radius: 5px; /* Закругленные углы */
+    cursor: pointer; /* Курсор в виде руки */
+    transition: background 0.3s ease; /* Плавное изменение цвета */
+    display: inline-block; /* Делаем кнопку блочным элементом */
+    text-align: center; /* Выравнивание текста по центру */
+    width: auto; /* Ширина кнопки автоматически подстраивается под содержимое */
+    box-sizing: border-box; /* Учитываем padding в общей ширине */
+    z-index: 1000; /* Увеличиваем z-index, чтобы кнопка была поверх других элементов */
 }
 
     #submit-button:hover {
-        background: #ff6666;
+        background: #ff6666; /* Цвет фона при наведении */
     }
 
 /* Блок для отображения загруженного документа */
@@ -204,6 +214,8 @@ input[type="text"] {
     background: rgba(255, 255, 255, 0.9);
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    position: relative; /* Убедитесь, что блоки не перекрывают кнопку */
+    z-index: 1; /* Убедитесь, что блоки не перекрывают кнопку */
 }
 
     .uploaded-document h2 {

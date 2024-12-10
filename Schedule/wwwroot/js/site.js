@@ -1,105 +1,4 @@
-﻿function handleSelection(select) {
-    if (select.value === "Excel") {
-        $('#fileSelectionModal').modal('show');
-    } else {
-        if (select.value) {
-            select.form.submit();
-        }
-    }
-}
-
-function submitFiles() {
-    var files = document.getElementById('fileInput').files;
-    var formData = new FormData();
-
-    for (var i = 0; i < files.length; i++) {
-        formData.append('files', files[i]);
-    }
-
-    formData.append('selectedAction', document.getElementById('actionSelect').value);
-
-    fetch('Upload', {
-        method: 'POST',
-        body: formData
-    })
-        .then(response => {
-            if (response.ok) {
-                $('#fileSelectionModal').modal('hide'); // скрыть первоначальное модальное окно
-                $('#modeSelectionModal').modal('show'); // показать модальное окно выбора режима
-            } else {
-                alert('Ошибка при загрузке файлов');
-            }
-        })
-        .catch(error => console.error('Ошибка:', error));
-}
-
-function submitMode() {
-    var selectedMode = document.querySelector('input[name="mode"]:checked');
-
-    if (selectedMode) {
-        console.log('Выбранный режим:', selectedMode.value);
-        $('#modeSelectionModal').modal('hide'); // скрыть модальное окно выбора режима
-
-        // Покажем окно для ввода имён групп или преподавателей
-        if (selectedMode.value === 'Student') {
-            $('#nameInputSection').show();
-            $('#teacherInputSection').hide();
-        } else {
-            $('#nameInputSection').hide();
-            $('#teacherInputSection').show();
-        }
-        $('#inputNamesModal').modal('show'); // показать модальное окно для ввода имен
-    } else {
-        alert('Пожалуйста, выберите режим');
-    }
-}
-
-function submitNames() {
-    var mode = document.querySelector('input[name="mode"]:checked').value;
-    var groupName = document.getElementById('groupInput').value;
-    var teacherName = document.getElementById('teacherInput').value;
-
-    console.log('Выбранный режим:', mode);
-    if (mode === 'Student') {
-        console.log('Введенная группа:', groupName);
-    } else {
-        console.log('Введенный преподаватель:', teacherName);
-    }
-
-    // Здесь мы можем отправить данные на сервер
-    submitExcel(mode, mode === 'Student' ? groupName : teacherName);
-
-    $('#inputNamesModal').modal('hide'); // скрыть модальное окно
-}
-
-function submitExcel(mode, param) {
-    if (mode === 'Student') mode = 0;
-    if (mode === 'Teacher') mode = 1;
-    console.log('Отправляемые данные:', { Mode: mode, Param: param }); // Выводим в консоль
-
-    fetch('Excel', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ Mode: mode, Param: param })
-    })
-        .then(response => {
-            if (!response.ok) {
-                return response.text().then(text => {
-                    throw new Error(text || 'Ошибка при выполнении импорта');
-                });
-            }
-            // Успешный импорт, перенаправляем на контроллер Export
-            window.location.href = '/Export/ExportPreview';
-        })
-        .catch(error => {
-            console.error('Ошибка:', error);
-            alert(error.message);
-        });
-}
-
-document.addEventListener('DOMContentLoaded', () => {
+﻿document.addEventListener('DOMContentLoaded', () => {
     const messages = document.querySelectorAll('.message');
     let currentIndex = 0;
     const delayBetweenMessages = 2000;
@@ -121,4 +20,121 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     showNextMessage();
+});
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    const fileUpload = document.getElementById('fileInput');
+    const roleSelection = document.getElementById('role-selection');
+    const additionalInfo = document.getElementById('additional-info');
+    const studentInfo = document.getElementById('student-info');
+    const teacherInfo = document.getElementById('teacher-info');
+    const submitButton = document.getElementById('submit-button');
+    const previewButton = document.getElementById('preview-button'); // Новая кнопка
+
+    // Обработчик загрузки файла
+    fileUpload.addEventListener('change', () => {
+        if (fileUpload.files.length > 0) {
+            roleSelection.style.display = 'block';
+            additionalInfo.style.display = 'block';
+            submitButton.style.display = 'block';
+            previewButton.style.display = 'block'; // Показываем новую кнопку
+        } else {
+            roleSelection.style.display = 'none';
+            additionalInfo.style.display = 'none';
+            submitButton.style.display = 'none';
+            previewButton.style.display = 'none'; // Скрываем новую кнопку
+        }
+    });
+
+    // Обработчик выбора роли (студент или преподаватель)
+    const roleRadios = document.querySelectorAll('input[name="mode"]');
+    roleRadios.forEach(radio => {
+        radio.addEventListener('change', () => {
+            if (radio.value === 'Student') {
+                studentInfo.style.display = 'block';
+                teacherInfo.style.display = 'none';
+            } else {
+                studentInfo.style.display = 'none';
+                teacherInfo.style.display = 'block';
+            }
+        });
+    });
+
+    // Обработчик нажатия кнопки "Загрузить"
+    submitButton.addEventListener('click', async () => {
+        const file = fileUpload.files[0];
+        const role = document.querySelector('input[name="mode"]:checked').value;
+        const groupNumber = document.getElementById('groupInput').value;
+        const teacherSurname = document.getElementById('teacherInput').value;
+
+        if (!file) {
+            alert('Пожалуйста, выберите файл для загрузки.');
+            return;
+        }
+
+        // Отправка файлов на сервер
+        const formData = new FormData();
+        formData.append('files', file);
+
+        try {
+            // Загрузка файлов
+            const uploadResponse = await fetch('/Import/Upload', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!uploadResponse.ok) {
+                const errorText = await uploadResponse.text();
+                throw new Error(errorText || 'Ошибка при загрузке файлов');
+            }
+
+            // Ожидание завершения всех потоков uploadResponse
+            await uploadResponse.text(); // Ожидаем завершения загрузки файлов
+
+            Promise.all;
+
+            console.log('Файл успешно загружен!'); // Логирование в консоль
+
+            // Отправка данных на сервер
+            const excelResponse = await fetch('/Import/Excel', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    Mode: role === 'Student' ? 0 : 1,
+                    Param: role === 'Student' ? groupNumber : teacherSurname
+                })
+            });
+
+            if (!excelResponse.ok) {
+                const errorText = await excelResponse.text();
+                throw new Error(errorText || 'Ошибка при выполнении импорта');
+            }
+
+            // Ожидание завершения всех потоков excelResponse
+            await excelResponse.text(); // Ожидаем завершения импорта данных
+
+            Promise.all;
+
+            console.log('Данные успешно импортированы!'); // Логирование в консоль
+
+            // Удаление папки UploadedFiles перед переходом на другую страницу
+            const deleteResponse = await fetch('/Import/DeleteUploadedFiles', {
+                method: 'POST'
+            });
+
+            if (!deleteResponse.ok) {
+                const errorText = await deleteResponse.text();
+                throw new Error(errorText || 'Ошибка при удалении папки UploadedFiles');
+            }
+
+
+            // Перенаправление на страницу предварительного просмотра
+            window.location.href = '/Export/ExportPreview';
+        } catch (error) {
+            console.error('Ошибка:', error);
+        }
+    });
 });

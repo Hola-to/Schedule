@@ -6,80 +6,53 @@
     <script src="~/js/site.js"></script>
 </head>
 
-<!-- Модальное окно для выбора файлов -->
-<div class="modal fade" id="fileSelectionModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Выбор файлов для импорта</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">×</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <input type="file" multiple id="fileInput">
-                <p>Выберите файлы для обработки (.xls, .xlsx)</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
-                <button type="button" class="btn btn-primary" onclick="submitFiles()">Подтвердить</button>
-            </div>
+<!-- Контент страницы -->
+<div class="content">
+    <h1>Загрузите Excel-документ</h1>
+    <div class="upload-box">
+        <!-- Скрытый input для выбора файла -->
+        <input type="file" id="fileInput" accept=".xlsx, .xls" style="display: none;" />
+
+        <!-- Пользовательская кнопка "Выбрать файл" -->
+        <label for="fileInput" class="custom-file-upload">Выбрать файл</label>
+    </div>
+
+    <!-- Контроллеры для выбора роли -->
+    <div class="role-selection" id="role-selection" style="display: none;">
+        <h2>Выберите роль:</h2>
+        <div class="radio-buttons">
+            <label>
+                <input type="radio" name="mode" value="Student" checked> Студент
+            </label>
+            <label>
+                <input type="radio" name="mode" value="Teacher"> Преподаватель
+            </label>
         </div>
     </div>
-</div>
 
-<!-- Модальное окно для выбора режима -->
-<div class="modal fade" id="modeSelectionModal" tabindex="-1" role="dialog" aria-labelledby="modeModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modeModalLabel">Выберите режим</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="mode" id="radioStudent" value="Student">
-                    <label class="form-check-label" for="radioStudent">Студент</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="mode" id="radioTeacher" value="Teacher">
-                    <label class="form-check-label" for="radioTeacher">Преподаватель</label>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
-                <button type="button" class="btn btn-primary" onclick="submitMode()">Подтвердить</button>
-            </div>
+    <!-- Контроллеры для ввода дополнительных данных -->
+    <div class="additional-info" id="additional-info" style="display: none;">
+        <div class="student-info" id="student-info">
+            <label for="groupInput">Номер группы:</label>
+            <input type="text" id="groupInput" placeholder="Введите номер группы">
+        </div>
+        <div class="teacher-info" id="teacher-info" style="display: none;">
+            <label for="teacherInput">Фамилия преподавателя:</label>
+            <input type="text" id="teacherInput" placeholder="Введите фамилию преподавателя">
         </div>
     </div>
-</div>
 
-<!-- Модальное окно для ввода названия группы и имени преподавателя -->
-<div class="modal fade" id="inputNamesModal" tabindex="-1" role="dialog" aria-labelledby="namesModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="namesModalLabel">Введите информацию</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div id="nameInputSection">
-                    <div class="mb-3">
-                        <label for="groupInput" class="form-label">Название группы</label>
-                        <input type="text" id="groupInput" class="form-control" placeholder="Введите название группы">
-                    </div>
-                </div>
-                <div id="teacherInputSection" style="display:none;">
-                    <div class="mb-3">
-                        <label for="teacherInput" class="form-label">Имя преподавателя</label>
-                        <input type="text" id="teacherInput" class="form-control" placeholder="Введите имя преподавателя">
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
-                <button type="button" class="btn btn-primary" onclick="submitNames()">Подтвердить</button>
-            </div>
+    <!-- Кнопка "Загрузить" -->
+    <button id="submit-button" style="display: none;">Загрузить</button>
+
+    <!-- Блок для отображения загруженного документа -->
+    <div class="uploaded-document" id="uploaded-document" style="display: none;">
+        <h2>Загруженный документ:</h2>
+        <div class="document-info">
+            <p><strong>Первый выбор:</strong> <span id="role-display"></span></p>
+            <p><strong>Второй выбор:</strong> <span id="additional-info-display"></span></p>
+            <p><strong>Документ:</strong> <span id="file-name-display"></span></p>
+            <a href="#" id="download-link" download>Скачать документ</a>
         </div>
     </div>
 </div>

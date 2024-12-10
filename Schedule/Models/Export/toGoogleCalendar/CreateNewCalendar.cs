@@ -9,23 +9,35 @@ namespace Schedule.Models.Export.toGoogleCalendar
             // Указываем идентификатор календаря
             if (calendarId == null || calendarId == "") calendarId = "Расписание ВГУ";
 
+            // Получаем список всех календарей
             var calendarList = service.CalendarList.List().Execute();
-            var primaryCalendarId = calendarList.Items[0].Id; // предполагается, что первый элемент - это основной календарь
 
-            var calendar = service.Calendars.Get(primaryCalendarId).Execute();
-            string timeZone = calendar.TimeZone;
+            // Проверяем, существует ли календарь с таким именем
+            var existingCalendar = calendarList.Items.FirstOrDefault(c => c.Summary == calendarId);
 
-            // Создание нового календаря с использованием временной зоны из аккаунта
-            Calendar schedule = new Calendar()
+            if (existingCalendar != null)
+            {
+                // Если календарь с таким именем уже существует, используем его
+                ScheduleCalendar = service.Calendars.Get(existingCalendar.Id).Execute();
+                return;
+            }
+
+            // Если календаря с таким именем нет, создаем новый
+            var primaryCalendar = calendarList.Items.FirstOrDefault(); // предполагается, что первый элемент - это основной календарь
+            string timeZone = primaryCalendar?.TimeZone ?? "Europe/Moscow"; // Используем временную зону основного календаря или зону по умолчанию
+
+            // Создание нового календаря с использованием временной зоны
+            Calendar newCalendar = new Calendar()
             {
                 Summary = calendarId,
                 TimeZone = timeZone
             };
 
             // Вызов API для создания календаря
-            var createdCalendar = service.Calendars.Insert(schedule).Execute();
+            var createdCalendar = service.Calendars.Insert(newCalendar).Execute();
 
             ScheduleCalendar = createdCalendar;
+            Console.WriteLine($"Создан новый календарь: {createdCalendar.Summary} (ID: {createdCalendar.Id})");
         }
     }
 }

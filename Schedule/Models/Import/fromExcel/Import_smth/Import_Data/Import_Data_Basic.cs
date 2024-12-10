@@ -7,7 +7,7 @@ namespace Schedule.Models.Import.fromExcel
         private delegate void Everything(string value);
         public static void GetData()
         {
-            for (int column = Settings.DATE_COLUMN + 2; column < colCount; column++)
+            for (int column = Settings.DATE_COLUMN + 2; column <= colCount; column++)
             {
                 for (int row = Settings.GROUP_ROW + 3; row < rowCount;)
                 {
@@ -23,7 +23,7 @@ namespace Schedule.Models.Import.fromExcel
                         one_Data.Auditorium_Set
                     };
 
-                    Schedule.Models.Database.Data_List tmp_l = new Data_List();
+                    Schedule.Models.Database.Data_List tmp_l = new Schedule.Models.Database.Data_List();
 
                     if (Worksheet.Cells[row, column].Merge == false)
                     {
@@ -45,7 +45,7 @@ namespace Schedule.Models.Import.fromExcel
 
                     else if (Worksheet.Cells[row, column].Merge == true && tmp_l[row, column] == false)
                     {
-                        List <Schedule.Models.Database.Data> datas = new List <Schedule.Models.Database.Data>();
+                        List<Schedule.Models.Database.Data> datas = new List<Schedule.Models.Database.Data>();
 
                         object tmp = null;
                         int i_col = 0;
@@ -65,7 +65,7 @@ namespace Schedule.Models.Import.fromExcel
 
                             datas.Add(one_Data);
 
-                            if (Worksheet.Cells[row, column + i_col].Value != null 
+                            if (Worksheet.Cells[row, column + i_col].Value != null
                                 && Worksheet.Cells[row, column + i_col].Value as string != "") break;
                         }
 

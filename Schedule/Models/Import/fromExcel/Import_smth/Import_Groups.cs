@@ -28,7 +28,17 @@ namespace Schedule.Models.Import.fromExcel
                 Groups_List.Groups.Add(tmp);
             }
 
-            new SubGroups_List();
+            SubGroups_List.SubGroups.Add(null);
+
+            for (int i = 1; i < colCount; i++)
+            {
+                var cell = Worksheet.Cells[row + 1, i].Value;
+
+                string? tmp = null;
+                if (cell != null) tmp = cell.ToString();
+
+                SubGroups_List.SubGroups.Add(tmp);
+            }
         }
     }
 }

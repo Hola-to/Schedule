@@ -6,8 +6,6 @@ namespace Schedule.Models.Import.fromExcel
     {
         public static void GetData_Teacher(string FIO)
         {
-            GetData();
-
             Filter_Teacher(FIO);
         }
 

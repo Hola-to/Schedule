@@ -6,10 +6,17 @@ namespace Schedule.Models.Database
     {
         public static List<string> Groups { get; set; } = new List<string>();
 
-        public virtual string this[int index]
+        public string this[int index]
         {
             get { return Groups[index]; }
             set { Groups[index] = value; }
+        }
+
+        public static int GetIndexGr(string group)
+        {
+            int index = Groups.FindIndex(g => g != null && g.Equals(group, StringComparison.OrdinalIgnoreCase));
+            if (index == -1) throw new ArgumentException("Группа не найдена");
+            else return index;
         }
 
         public IEnumerator<string> GetEnumerator()

@@ -12,7 +12,6 @@ namespace Schedule.Controllers
     public class ImportController : Controller
     {
         private readonly Importer _importer;
-
         private readonly ILogger<HomeController> _logger;
 
         public ImportController(Importer importer, ILogger<HomeController> logger)
@@ -22,24 +21,35 @@ namespace Schedule.Controllers
         }
 
         private readonly string importedFilesPath = "importedFiles.json";
+        private readonly string DirectoryPath = "UploadedFiles";
+        private static List<string> fullPaths = new List<string>();
 
         [HttpPost("Upload")]
-        public async Task<IActionResult> UploadFiles(List<IFormFile> files)
+        public async Task<IActionResult> UploadFiles(List<IFormFile> _files)
         {
-            var uploadDirectory = Path.Combine(Directory.GetCurrentDirectory(), "UploadedFiles");
-            Directory.CreateDirectory(uploadDirectory);
-
-            var fileNames = new List<string>();
-            var fullPaths = new List<string>();
-
             try
             {
-                if (files == null || !files.Any())
+                // Убедитесь, что директория UploadedFiles существует
+                var uploadDirectory = Path.Combine(Directory.GetCurrentDirectory(), DirectoryPath);
+                if (!Directory.Exists(uploadDirectory))
+                {
+                    Directory.CreateDirectory(uploadDirectory); // Создаём директорию, если её нет
+                }
+
+                // Проверка создания директории
+                if (!Directory.Exists(uploadDirectory))
+                {
+                    return StatusCode(500, "Не удалось создать директорию " + DirectoryPath);
+                }
+
+                var fileNames = new List<string>();
+
+                if (_files == null || !_files.Any())
                 {
                     return BadRequest("Нет файлов для загрузки.");
                 }
 
-                foreach (var file in files)
+                foreach (var file in _files)
                 {
                     if (file.Length > 0)
                     {
@@ -56,21 +66,21 @@ namespace Schedule.Controllers
                             System.IO.File.Delete(filePath);
                         }
 
-                        // Создаем поток с параметром FileShare.ReadWrite
+                        // Сохраняем файл
                         using (var stream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
                         {
                             await file.CopyToAsync(stream);
                         }
 
-                        // Сохранение полного пути для внутреннего использования
+                        // Сохраняем полный путь для внутреннего использования
                         fullPaths.Add(filePath);
-                        // Добавление относительного пути для доступа через веб
-                        string relativePath = Path.Combine("UploadedFiles", file.FileName);
+                        // Сохраняем относительный путь для доступа через веб
+                        string relativePath = Path.Combine(DirectoryPath, file.FileName);
                         fileNames.Add(relativePath);
                     }
                 }
 
-                var jsonPath = Path.Combine(Directory.GetCurrentDirectory(), "importedFiles.json");
+                var jsonPath = Path.Combine(Directory.GetCurrentDirectory(), importedFilesPath);
 
                 // Удаляем файл, если он уже существует
                 if (System.IO.File.Exists(jsonPath))
@@ -84,10 +94,10 @@ namespace Schedule.Controllers
                     fullPaths = fullPaths       // полные пути для внутреннего использования
                 };
 
-                // Сериализация с учетом полных путей
+                // Сериализация данных
                 var jsonString = System.Text.Json.JsonSerializer.Serialize(jsonData, new JsonSerializerOptions { WriteIndented = true });
 
-                // Создаем поток с параметром FileShare.None
+                // Сохраняем JSON-файл
                 using (var stream = new FileStream(jsonPath, FileMode.Create, FileAccess.Write, FileShare.None))
                 {
                     var jsonBytes = System.Text.Encoding.UTF8.GetBytes(jsonString);
@@ -98,16 +108,33 @@ namespace Schedule.Controllers
             }
             catch (Exception ex)
             {
-                // Логирование ошибки
                 _logger.LogError($"Ошибка при загрузке файла: {ex.Message}");
-
-                // Возвращаем общую ошибку
                 return StatusCode(500, "Произошла ошибка при обработке запроса.");
             }
         }
 
-        [HttpPost("Excel")]
-        public async Task<IActionResult> Excel([FromBody] ExcelRequest request)
+        [HttpPost("ExcelUpload")]
+        public async Task<IActionResult> ExcelUpload()
+        {
+            try
+            {
+                if(fullPaths.Count == 0) return StatusCode(500, "Произошла ошибка при импорте");
+
+                foreach (var item in fullPaths)
+                {
+                    Import_Data.GetData(item);
+                }
+
+                return Ok();
+            }
+            catch
+            {
+                return StatusCode(500, "Произошла ошибка при импорте");
+            }
+        }
+
+        [HttpPost("ExcelFind")]
+        public async Task<IActionResult> ExcelFind([FromBody] ExcelRequest request)
         {
             if (request == null || string.IsNullOrEmpty(request.Param) || request.Mode < 0)
             {
@@ -118,16 +145,14 @@ namespace Schedule.Controllers
 
             try
             {
-                var Files = _importer.GetFiles(importedFilesPath);
-
-                if (!Files.Any())
+                foreach (var item in fullPaths)
                 {
-                    return BadRequest("Нет файлов для импорта.");
-                }
+                    if (!item.Any())
+                    {
+                        return BadRequest("Нет файлов для импорта.");
+                    }
 
-                foreach (var FilePath in Files)
-                {
-                    _importer.ImportObject(type, FilePath, request.Mode, request.Param);
+                    _importer.ImportObject(type, request.Mode, request.Param);
                 }
 
                 return Ok();
@@ -142,8 +167,8 @@ namespace Schedule.Controllers
         // Класс для запроса
         public class ExcelRequest
         {
-            public int Mode { get; set; } 
-            public string Param { get; set; } 
+            public int Mode { get; set; }
+            public string Param { get; set; }
         }
 
         [HttpPost("DeleteUploadedFiles")]
@@ -151,7 +176,7 @@ namespace Schedule.Controllers
         {
             try
             {
-                string uploadDirectory = Path.Combine(Directory.GetCurrentDirectory(), "UploadedFiles");
+                string uploadDirectory = Path.Combine(Directory.GetCurrentDirectory(), DirectoryPath);
 
                 if (Directory.Exists(uploadDirectory))
                 {
@@ -163,7 +188,7 @@ namespace Schedule.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"Ошибка при удалении папки UploadedFiles: {ex.Message}");
-                return StatusCode(500, "Произошла ошибка при удалении папки UploadedFiles.");
+                return StatusCode(500, "Произошла ошибка при удалении папки " + DirectoryPath);
             }
         }
     }

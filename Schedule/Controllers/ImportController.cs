@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Collections;
 using Newtonsoft.Json;
 using System.Text.Json;
+using System.Text.RegularExpressions;
+using Schedule.Models;
 
 namespace Schedule.Controllers
 {
@@ -13,16 +15,36 @@ namespace Schedule.Controllers
     {
         private readonly Importer _importer;
         private readonly ILogger<HomeController> _logger;
+        private readonly JsonDataService _jsonFileReader;
+
+        private readonly string importedFilesPath = "importedFiles.json";
+        private readonly string DirectoryPath = "UploadedFiles";
+        private static List<string> fullPaths = new List<string>();
+        private static string JsonFilePath = "data.json";
 
         public ImportController(Importer importer, ILogger<HomeController> logger)
         {
             _importer = importer;
             _logger = logger;
+            _jsonFileReader = new JsonDataService(JsonFilePath);
         }
 
-        private readonly string importedFilesPath = "importedFiles.json";
-        private readonly string DirectoryPath = "UploadedFiles";
-        private static List<string> fullPaths = new List<string>();
+
+        [HttpGet("GetGroups")]
+        public IActionResult GetGroups(string query)
+        {
+            var groups = _jsonFileReader.GetSubGroups();
+            var result = groups.Where(g => g.Contains(query, StringComparison.OrdinalIgnoreCase)).ToList();
+            return Ok(result);
+        }
+
+        [HttpGet("GetTeachers")]
+        public IActionResult GetTeachers(string query)
+        {
+            var teachers = _jsonFileReader.GetTeachers();
+            var result = teachers.Where(t => t.Contains(query, StringComparison.OrdinalIgnoreCase)).ToList();
+            return Ok(result);
+        }
 
         [HttpPost("Upload")]
         public async Task<IActionResult> UploadFiles(List<IFormFile> _files)
@@ -74,6 +96,9 @@ namespace Schedule.Controllers
 
                         // Сохраняем полный путь для внутреннего использования
                         fullPaths.Add(filePath);
+
+                        JsonFilePath = Path.Combine(DirectoryPath, JsonFilePath);
+
                         // Сохраняем относительный путь для доступа через веб
                         string relativePath = Path.Combine(DirectoryPath, file.FileName);
                         fileNames.Add(relativePath);
@@ -104,6 +129,11 @@ namespace Schedule.Controllers
                     await stream.WriteAsync(jsonBytes, 0, jsonBytes.Length);
                 }
 
+                if (System.IO.File.Exists(JsonFilePath))
+                {
+                    System.IO.File.Delete(JsonFilePath);
+                }
+
                 return Ok();
             }
             catch (Exception ex)
@@ -122,7 +152,7 @@ namespace Schedule.Controllers
 
                 foreach (var item in fullPaths)
                 {
-                    Import_Data.GetData(item);
+                    Import_Data.GetData(item, JsonFilePath);
                 }
 
                 return Ok();

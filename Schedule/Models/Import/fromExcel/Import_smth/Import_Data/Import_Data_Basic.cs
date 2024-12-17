@@ -1,7 +1,10 @@
-﻿using Google.Apis.Calendar.v3.Data;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using OfficeOpenXml;
 using Schedule.Models.Database;
+using System;
+using System.Collections.Generic;
+using System.IO;
 
 namespace Schedule.Models.Import.fromExcel
 {
@@ -9,24 +12,24 @@ namespace Schedule.Models.Import.fromExcel
     {
         public static FileInfo? Some_File { get; set; }
 
-        // Объект для блокировки
-        private static readonly object ImportGroupsLock = new object();
-
         private delegate void Everything(string value);
-        public static void GetData(string filePath)
+
+        public static void GetData(string filePath, string JsonFilePath)
         {
-            var setting = GetMainInfo(filePath);
+            var setting = GetMainInfo(filePath, JsonFilePath);
 
             using (var package = new ExcelPackage(Some_File))
             {
                 new GetFromExcel(package, setting);
+
+                var teachers = new HashSet<string>(); // Используем HashSet для уникальных преподавателей
 
                 for (int column = Settings.DATE_COLUMN + 2; column <= colCount; column++)
                 {
                     for (int row = Settings.GROUP_ROW + 3; row < rowCount;)
                     {
                         Schedule.Models.Database.Data one_Data = new Schedule.Models.Database.Data();
-                        one_Data.Rows = [row, row + 1, row + 2];
+                        one_Data.Rows = new[] { row, row + 1, row + 2 };
                         one_Data.Column = column;
                         string? str_tmp = null;
 
@@ -41,7 +44,6 @@ namespace Schedule.Models.Import.fromExcel
 
                         if (Worksheet.Cells[row, column].Merge == false)
                         {
-
                             for (int i = 0; i < 3; i++)
                             {
                                 object tmp = null;
@@ -56,7 +58,6 @@ namespace Schedule.Models.Import.fromExcel
 
                             Schedule.Models.Database.Data_List.All_Data.Add(one_Data);
                         }
-
                         else if (Worksheet.Cells[row, column].Merge == true && tmp_l[row, column] == false)
                         {
                             List<Schedule.Models.Database.Data> datas = new List<Schedule.Models.Database.Data>();
@@ -97,7 +98,6 @@ namespace Schedule.Models.Import.fromExcel
 
                             row += 3;
                         }
-
                         else { row++; }
 
                         foreach (var date in Schedule.Models.Database.Date_List.All_Date)
@@ -107,12 +107,62 @@ namespace Schedule.Models.Import.fromExcel
                                 ++row;
                             }
                         }
+
+                        // Добавляем преподавателей в HashSet для уникальных значений
+                        if (!string.IsNullOrEmpty(one_Data.Teacher_FIO))
+                        {
+                            teachers.Add(one_Data.Teacher_FIO);
+                        }
                     }
                 }
+
+                // Сохраняем данные в JSON-файл
+                SaveTeachersToJson(teachers, JsonFilePath);
             }
         }
 
-        public static Excel_Settings GetMainInfo(string filePath)
+        private static void SaveTeachersToJson(HashSet<string> teachers, string JsonFilePath)
+        {
+            // Создаем объект для новых данных
+            var newData = new
+            {
+                Teachers = teachers.ToList() // Обернуть список преподавателей в объект с ключом "Teachers"
+            };
+
+            // Проверяем, существует ли файл
+            if (File.Exists(JsonFilePath))
+            {
+                // Читаем существующие данные из файла
+                var existingJson = File.ReadAllText(JsonFilePath);
+                var existingData = JObject.Parse(existingJson);
+
+                // Проверяем, есть ли уже ключ "Teachers"
+                if (existingData.ContainsKey("Teachers"))
+                {
+                    // Если ключ "Teachers" существует, объединяем данные
+                    var existingTeachers = existingData["Teachers"].ToObject<HashSet<string>>();
+                    existingTeachers.UnionWith(teachers); // Объединяем уникальные значения
+                    existingData["Teachers"] = JArray.FromObject(existingTeachers.ToList()); // Обновляем данные
+                }
+                else
+                {
+                    // Если ключа "Teachers" нет, добавляем его
+                    existingData["Teachers"] = JArray.FromObject(teachers.ToList());
+                }
+
+                // Сериализуем обновленные данные
+                var updatedJson = existingData.ToString(Formatting.Indented);
+                File.WriteAllText(JsonFilePath, updatedJson);
+            }
+            else
+            {
+                // Если файл не существует, создаем новый файл с новыми данными
+                var json = JsonConvert.SerializeObject(newData, Formatting.Indented);
+                File.WriteAllText(JsonFilePath, json);
+            }
+        }
+
+        public static Excel_Settings GetMainInfo(string filePath, string JsonFilePath)
         {
             if (!File.Exists(filePath)) throw new Exception("Файл не найден");
 
@@ -142,11 +192,16 @@ namespace Schedule.Models.Import.fromExcel
                 }
                 catch (Exception ex) { throw new Exception("Ошибка при чтении файла ", ex); }
 
-                Import_Groups.GetData(Main_Params.Settings.GROUP_ROW);
+                Import_Groups.GetData(Main_Params.Settings.GROUP_ROW, JsonFilePath);
                 Import_Date.GetData(Main_Params.Settings.DATE_COLUMN);
 
                 return temp_;
             }
         }
+    }
+
+    public class Teacher
+    {
+        public string TeacherFIO { get; set; }
     }
 }

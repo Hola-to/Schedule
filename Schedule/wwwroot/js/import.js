@@ -121,4 +121,78 @@
             console.error('Ошибка:', error);
         }
     });
+
+    // Автодополнение для поля "Номер группы"
+    const groupInput = document.getElementById('groupInput');
+    const groupSuggestions = document.createElement('div');
+    groupSuggestions.classList.add('suggestions');
+    groupInput.parentNode.appendChild(groupSuggestions);
+
+    groupInput.addEventListener('input', async () => {
+        const query = groupInput.value;
+        if (query.length < 2) {
+            groupSuggestions.style.display = 'none';
+            return;
+        }
+
+        try {
+            const response = await fetch(`/Import/GetGroups?query=${query}`);
+            if (!response.ok) {
+                throw new Error('Ошибка при получении групп');
+            }
+
+            const data = await response.json();
+            groupSuggestions.innerHTML = '';
+            data.forEach(group => {
+                const suggestion = document.createElement('div');
+                suggestion.textContent = group;
+                suggestion.addEventListener('click', () => {
+                    groupInput.value = group;
+                    groupSuggestions.style.display = 'none';
+                });
+                groupSuggestions.appendChild(suggestion);
+            });
+
+            groupSuggestions.style.display = data.length > 0 ? 'block' : 'none';
+        } catch (error) {
+            console.error('Ошибка:', error);
+        }
+    });
+
+    // Автодополнение для поля "Фамилия преподавателя"
+    const teacherInput = document.getElementById('teacherInput');
+    const teacherSuggestions = document.createElement('div');
+    teacherSuggestions.classList.add('suggestions');
+    teacherInput.parentNode.appendChild(teacherSuggestions);
+
+    teacherInput.addEventListener('input', async () => {
+        const query = teacherInput.value;
+        if (query.length < 2) {
+            teacherSuggestions.style.display = 'none';
+            return;
+        }
+
+        try {
+            const response = await fetch(`/Import/GetTeachers?query=${query}`);
+            if (!response.ok) {
+                throw new Error('Ошибка при получении преподавателей');
+            }
+
+            const data = await response.json();
+            teacherSuggestions.innerHTML = '';
+            data.forEach(teacher => {
+                const suggestion = document.createElement('div');
+                suggestion.textContent = teacher;
+                suggestion.addEventListener('click', () => {
+                    teacherInput.value = teacher;
+                    teacherSuggestions.style.display = 'none';
+                });
+                teacherSuggestions.appendChild(suggestion);
+            });
+
+            teacherSuggestions.style.display = data.length > 0 ? 'block' : 'none';
+        } catch (error) {
+            console.error('Ошибка:', error);
+        }
+    });
 });

@@ -197,6 +197,7 @@ h1 {
     border-radius: 50px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     animation: gradientButton 5s ease infinite;
+    z-index: 1000
 }
 
 @keyframes gradientButton {

@@ -175,7 +175,8 @@ html, body {
     border-radius: 50px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     animation: gradientButton 5s ease infinite;
-    border: none
+    border: none;
+    z-index: 1000
 }
 
 @keyframes gradientButton {
